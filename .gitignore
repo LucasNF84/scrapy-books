@@ -1,0 +1,6 @@
+libros_output.json
+__pycache__/
+venv/
+*.pyc
+*.pyo
+__init__.py
