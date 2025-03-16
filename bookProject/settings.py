@@ -1,4 +1,4 @@
-# Scrapy settings for proyectoprueba project
+# Scrapy settings for bookProject project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -7,14 +7,14 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = "proyectoprueba"
+BOT_NAME = "bookProject"
 
-SPIDER_MODULES = ["proyectoprueba.spiders"]
-NEWSPIDER_MODULE = "proyectoprueba.spiders"
+SPIDER_MODULES = ["bookProject.spiders"]
+NEWSPIDER_MODULE = "bookProject.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = "proyectoprueba (+http://www.yourdomain.com)"
+#USER_AGENT = "bookProject (+http://www.yourdomain.com)"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -45,13 +45,13 @@ ROBOTSTXT_OBEY = True
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    "proyectoprueba.middlewares.ProyectopruebaSpiderMiddleware": 543,
+#    "bookProject.middlewares.bookProjectSpiderMiddleware": 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    "proyectoprueba.middlewares.ProyectopruebaDownloaderMiddleware": 543,
+#    "bookProject.middlewares.bookProjectDownloaderMiddleware": 543,
 #}
 
 # Enable or disable extensions
@@ -63,7 +63,7 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 #ITEM_PIPELINES = {
-#    "proyectoprueba.pipelines.ProyectopruebaPipeline": 300,
+#    "bookProject.pipelines.bookProjectPipeline": 300,
 #}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -91,5 +91,5 @@ ROBOTSTXT_OBEY = True
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
 ITEM_PIPELINES = {
-    'proyectoprueba.pipelines.JsonWriterPipeline': 300,
+    'bookProject.pipelines.JsonWriterPipeline': 300,
 }

@@ -19,6 +19,8 @@ class JsonWriterPipeline:
         # Verificación: Si falta el título, descarta el ítem
         if not item.get("title"):
             raise scrapy.exceptions.DropItem(f"Faltan datos en el ítem: {item}")
+        # 🚨 Depuración: Ver si el precio llega limpio al pipeline
+        print(f"Precio recibido en pipeline: {item['price']}")
 
         # Si el precio no es válido, poner 0 en vez de descartarlo
         if item.get("price") is None:

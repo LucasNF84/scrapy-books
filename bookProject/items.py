@@ -2,13 +2,18 @@ import scrapy
 from itemloaders.processors import TakeFirst, MapCompose, Join
 import re
 
-def clean_price(value):
-    """Elimina el símbolo de moneda y convierte el precio a float"""
-    value = re.sub(r"[^\d.]", "", value)  # Elimina todo excepto números y punto decimal
-    try:
-        return float(value)  # Convierte a número decimal
-    except ValueError:
-        return 0.0  # Si no se puede convertir, devuelve 0.0
+def clean_price(price_str):
+    """Elimina el símbolo £ y convierte el precio a float"""
+    if price_str:
+        print(f"Antes de limpiar: {price_str}")  # 🚨 Depuración: Ver qué llega antes de limpiar
+        price_str = price_str.replace("£", "").strip()  # Elimina el símbolo de moneda
+        try:
+            clean_value = float(price_str)  # Convierte a número decimal
+            print(f"Después de limpiar: {clean_value}")  # 🚨 Ver si realmente se limpia
+            return clean_value
+        except ValueError:
+            return 0.0  # Si hay error, devuelve 0.0
+    return 0.0  # Si el valor es None o vacío, devuelve 0.0
 
 def clean_stock(value):
     """Convierte la disponibilidad en 'Sí' o 'No'"""
@@ -28,7 +33,7 @@ class BookItem(scrapy.Item):
         output_processor=TakeFirst()  # Toma solo el primer valor
     )
     price = scrapy.Field(
-        input_processor=MapCompose(clean_price),  # Aplica la función de limpieza
+        input_processor=MapCompose(clean_price),  # Aplica la limpieza
         output_processor=TakeFirst()
     )
     stock = scrapy.Field(
