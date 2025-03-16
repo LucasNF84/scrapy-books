@@ -1,4 +1,4 @@
-from proyectoprueba.items import BookItem
+from bookProject.items import BookItem
 import scrapy
 
 class BooksSpider(scrapy.Spider):
