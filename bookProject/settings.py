@@ -1,3 +1,6 @@
+import os
+from dotenv import load_dotenv
+
 # Scrapy settings for bookProject project
 #
 # For simplicity, this file contains only settings considered important or
@@ -91,5 +94,11 @@ ROBOTSTXT_OBEY = True
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
 ITEM_PIPELINES = {
-    'bookProject.pipelines.JsonWriterPipeline': 300,
+    'bookProject.pipelines.PostgresPipeline': 300,  # Activar pipeline de PostgreSQL
 }
+
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
+POSTGRES_DB = os.getenv("POSTGRES_DB", "booksdb")
+POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT", 5432)

@@ -1,41 +1,61 @@
-import json
+import os
+import psycopg2
 import scrapy.exceptions
+from dotenv import load_dotenv
 
-class JsonWriterPipeline:
+# 🔹 Cargar variables del entorno
+load_dotenv()
+
+class PostgresPipeline:
     def open_spider(self, spider):
-        """Abre el archivo JSON al iniciar el Spider"""
-        self.file = open('libros_output.json', 'w', encoding="utf-8")
-        self.file.write("[")
-        self.first_item = True
+        """Se ejecuta cuando el spider inicia: Conecta a PostgreSQL"""
+        
+        # 🚨 Imprimir configuración para depuración
+        print("🔹 Intentando conectar a PostgreSQL con:")
+        print("Host:", os.getenv("POSTGRES_HOST"))
+        print("DB:", os.getenv("POSTGRES_DB"))
+        print("User:", os.getenv("POSTGRES_USER"))
+        print("Password:", os.getenv("POSTGRES_PASSWORD"))  # 🚨 Ver si está vacío
+        print("Port:", os.getenv("POSTGRES_PORT"))
 
-    def close_spider(self, spider):
-        """Cierra el archivo JSON al finalizar el Spider"""
-        self.file.write("]")
-        self.file.close()
+        try:
+            self.conn = psycopg2.connect(
+                host=os.getenv("POSTGRES_HOST"),
+                database=os.getenv("POSTGRES_DB"),
+                user=os.getenv("POSTGRES_USER"),
+                password=os.getenv("POSTGRES_PASSWORD"),
+                port=os.getenv("POSTGRES_PORT"),
+            )
+            self.cursor = self.conn.cursor()
+        except Exception as e:
+            print("❌ Error de conexión a PostgreSQL:", e)
+            raise scrapy.exceptions.DropItem(f"No se pudo conectar a PostgreSQL: {e}")
 
     def process_item(self, item, spider):
-        """Procesa cada item, valida y lo guarda en el JSON"""
+        """Guarda el libro en la base de datos, actualiza si ya existe"""
+        try:
+            print(f"🔄 Procesando: {item}")  # 🚨 Ver qué datos se están insertando
+            
+            self.cursor.execute("""
+                INSERT INTO books (title, price, stock, stars, category)
+                VALUES (%s, %s, %s, %s, %s)
+                ON CONFLICT (title) DO UPDATE 
+                SET price = EXCLUDED.price,
+                    stock = EXCLUDED.stock,
+                    stars = EXCLUDED.stars,
+                    category = EXCLUDED.category
+            """, (item["title"], item["price"], item["stock"], item["stars"], item["category"]))
 
-        # Verificación: Si falta el título, descarta el ítem
-        if not item.get("title"):
-            raise scrapy.exceptions.DropItem(f"Faltan datos en el ítem: {item}")
-        # 🚨 Depuración: Ver si el precio llega limpio al pipeline
-        print(f"Precio recibido en pipeline: {item['price']}")
+            self.conn.commit()  # 🔹 IMPORTANTE: Confirmar la transacción después de cada inserción
+            print(f"✅ Guardado/Actualizado: {item['title']}")
 
-        # Si el precio no es válido, poner 0 en vez de descartarlo
-        if item.get("price") is None:
-            item["price"] = 0  # Asigna 0 en lugar de descartar
+        except Exception as e:
+            print(f"❌ Error al guardar {item['title']}: {e}")
+            self.conn.rollback()  # 🚨 IMPORTANTE: Revertir la transacción en caso de error
 
-        # Si el stock está vacío, poner "Desconocido"
-        if not item.get("stock"):
-            item["stock"] = "Desconocido"
+        return item
 
-        # Guarda el ítem en JSON
-        if not self.first_item:
-            self.file.write(",\n")  # Agrega una coma entre elementos
-        self.first_item = False
-
-        line = json.dumps(dict(item), ensure_ascii=False, indent=4)
-        self.file.write(line)
-
-        return item  # Retorna el ítem para que Scrapy continúe procesando
+    def close_spider(self, spider):
+        """Cierra la conexión cuando el Spider termina"""
+        self.cursor.close()
+        self.conn.close()

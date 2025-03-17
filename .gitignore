@@ -4,3 +4,5 @@ venv/
 *.pyc
 *.pyo
 __init__.py
+# Ignorar archivos de entorno
+.env
