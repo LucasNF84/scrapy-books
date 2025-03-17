@@ -39,7 +39,7 @@ For each book, the following fields are processed:
 
 ### **3️⃣ Data Storage**
 
-Extracted and transformed data is stored in a **PostgreSQL** database in the `books` table.
+Extracted and transformed data is stored in a **PostgreSQL** database in the `books` table. If a record already exists, it will be **updated** instead of inserting a duplicate. If a new record is found, it will be **inserted**.
 
 ---
 
@@ -77,7 +77,7 @@ CREATE DATABASE booksdb;
 
 CREATE TABLE books (
     id SERIAL PRIMARY KEY,
-    title TEXT,
+    title TEXT UNIQUE,
     price NUMERIC,
     stock TEXT,
     stars INTEGER,
@@ -145,6 +145,8 @@ SELECT * FROM books;
 ✔ Data processing was improved using **ItemLoaders** in Scrapy.  
 ✔ Configuration for running PostgreSQL in **Docker** was added.  
 ✔ Detailed installation and setup instructions were included.  
+✔ If a record already exists, it will be **updated** instead of inserting a duplicate.  
+✔ The `title` field is now **unique** to prevent duplicate entries.  
 
 ---
 
